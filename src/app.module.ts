@@ -3,9 +3,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TaobaoModule } from './taobao/taobao.module';
 import { LoginModule } from './login/login.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [TaobaoModule, LoginModule],
+  imports: [TaobaoModule, LoginModule, AuthModule],
   controllers: [AppController],
   providers: [AppService],
 })
