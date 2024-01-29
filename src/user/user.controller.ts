@@ -1,11 +1,15 @@
-import { Controller, Post, Body, UseGuards, Req } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Req, Get } from '@nestjs/common';
 import { AuthService } from '@/auth/auth.service';
 // import { AuthGuard } from '@nestjs/passport';
 import { AuthGuard } from '@nestjs/passport/dist/auth.guard';
+import { UserService } from './user.service';
 
 @Controller('auth')
 export class UserController {
-  constructor(private readonly jwtService: AuthService) {
+  constructor(
+    private readonly usersService: UserService,
+    private readonly jwtService: AuthService,
+  ) {
     //
   }
 
@@ -19,6 +23,12 @@ export class UserController {
 
     // 返回令牌给客户端
     return { token };
+  }
+
+  @Get('users')
+  @UseGuards(AuthGuard('jwt'))
+  findAll() {
+    return this.usersService.findAll();
   }
 
   @Post('verify')
