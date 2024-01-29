@@ -1,4 +1,12 @@
-import { Controller, Post, Body, UseGuards, Req, Get } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Req,
+  Get,
+  ConflictException,
+} from '@nestjs/common';
 import { AuthService } from '@/auth/auth.service';
 // import { AuthGuard } from '@nestjs/passport';
 import { AuthGuard } from '@nestjs/passport/dist/auth.guard';
@@ -7,19 +15,25 @@ import { UserService } from './user.service';
 @Controller('auth')
 export class UserController {
   constructor(
-    private readonly usersService: UserService,
+    private readonly userService: UserService,
     private readonly jwtService: AuthService,
   ) {
     //
   }
 
   @Post('login')
-  login(@Body() credentials: { username: string; password: string }) {
+  async login(@Body() credentials: { username: string; password: string }) {
     // 执行身份验证逻辑...
-
-    console.log('login', credentials);
+    const { username, password } = credentials;
+    const cur = await this.userService.findOne(username);
+    console.log('login', cur);
+    if (cur) {
+      throw new ConflictException('用户名已存在');
+    }
     // 如果验证成功，生成令牌
-    const token = this.jwtService.generateToken(credentials);
+    const result = await this.userService.createUser({ username, password });
+    console.log(result, '-=-=-result');
+    const token = this.jwtService.generateToken({ username, password });
 
     // 返回令牌给客户端
     return { token };
@@ -28,7 +42,7 @@ export class UserController {
   @Get('users')
   @UseGuards(AuthGuard('jwt'))
   findAll() {
-    return this.usersService.findAll();
+    return this.userService.findAll();
   }
 
   @Post('verify')
