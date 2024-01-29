@@ -4,7 +4,7 @@ import { AuthService } from '@/auth/auth.service';
 import { AuthGuard } from '@nestjs/passport/dist/auth.guard';
 
 @Controller('auth')
-export class LoginController {
+export class UserController {
   constructor(private readonly jwtService: AuthService) {
     //
   }
