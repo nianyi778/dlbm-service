@@ -11,9 +11,9 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
   async validate(token: string) {
     const user = await this.authService.validateToken(token);
-    console.log(user, token);
+    console.log(user, token, '-=-=-');
     if (!user) {
-      throw new UnauthorizedException(); // 返回 '未授权' 错误 (401)
+      throw new UnauthorizedException('未授权'); // 返回 '未授权' 错误 (401)
     }
     return user; // 返回用户信息
   }

@@ -7,7 +7,7 @@ export class AuthService {
     // 123
   }
 
-  generateToken(payload: { userId: number }): string {
+  generateToken(payload: { username: string; password: string }): string {
     return this.jwtService.sign(payload);
   }
 

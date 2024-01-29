@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { jwtConfig } from '@/constants/jwt';
@@ -9,13 +9,17 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       // 分别传入这些参数
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: false,
+      ignoreExpiration: true, // 是否校验过期
       secretOrKey: jwtConfig.secret,
     });
   }
 
-  // token校验成功,会走到这里,否则会直接走401
+  // 成功才会到这
   async validate(payload: any) {
+    const userId = false;
+    if (!userId) {
+      throw new UnauthorizedException('用户不存在');
+    }
     return payload;
   }
 }
