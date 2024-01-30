@@ -32,6 +32,7 @@ export class UserController {
     }
     // 如果验证成功，生成令牌
     const result = await this.userService.createUser({ username, password });
+
     console.log(result, '-=-=-result');
     const token = this.jwtService.generateToken({ username, password });
 

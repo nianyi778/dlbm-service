@@ -6,7 +6,8 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { MongooseModule } from '@nestjs/mongoose';
+import { MongooseConfigProvider } from './constants/mongoose-config.provider';
 
 @Module({
   imports: [
@@ -15,18 +16,24 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       validationSchema: Joi.object({
         PORT: Joi.number().default(3000),
         DB_URL: Joi.string().required(),
+        DB_URI: Joi.string().required(),
+        DB_DB_NAME: Joi.string().required(),
+        DB_USER: Joi.string().required(),
+        DB_PASS: Joi.string().required(),
         JWT_SECRET: Joi.string().required(),
         JWT_SIGNOPTIONS_EXPIRESIN: Joi.string().default('1h'),
       }),
     }),
-    TypeOrmModule.forRootAsync({
+
+    MongooseModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        type: 'mongodb',
-        url: configService.get('DB_URL'),
-        autoLoadEntities: true,
-        synchronize: true,
-      }),
+      useFactory: (configService: ConfigService) => {
+        const mongooseConfigProvider = new MongooseConfigProvider(
+          configService,
+        );
+        const mongooseOptions = mongooseConfigProvider.getMongooseOptions();
+        return mongooseOptions;
+      },
       inject: [ConfigService],
     }),
     TaobaoModule,

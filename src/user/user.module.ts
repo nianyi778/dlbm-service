@@ -2,11 +2,14 @@ import { Module } from '@nestjs/common';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { AuthModule } from '@/auth/auth.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
+import { MongooseModule } from '@nestjs/mongoose';
+import { User, UserSchema } from './schemas/user.schema';
 
 @Module({
-  imports: [AuthModule, TypeOrmModule.forFeature([User])],
+  imports: [
+    AuthModule,
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+  ],
   controllers: [UserController],
   providers: [UserService],
   exports: [UserService], // 对外暴露，别模块引用
