@@ -6,12 +6,16 @@ import {
   Req,
   Get,
   ConflictException,
+  Res,
+  HttpStatus,
+  HttpException,
 } from '@nestjs/common';
 import { AuthService } from '@/auth/auth.service';
 // import { AuthGuard } from '@nestjs/passport';
 import { AuthGuard } from '@nestjs/passport/dist/auth.guard';
 import { UserService } from './user.service';
-
+import { Response } from 'express';
+import { Promise } from 'mongoose';
 @Controller('auth')
 export class UserController {
   constructor(
@@ -22,22 +26,32 @@ export class UserController {
   }
 
   @Post('login')
-  async login(@Body() credentials: { username: string; password: string }) {
+  async login(
+    @Body() credentials: { username: string; password: string },
+    @Res() res: Response,
+  ): Promise<void> {
     // 执行身份验证逻辑...
     const { username, password } = credentials;
     const cur = await this.userService.findOne(username);
-    console.log('login', cur);
     if (cur) {
       throw new ConflictException('用户名已存在');
     }
     // 如果验证成功，生成令牌
     const result = await this.userService.createUser({ username, password });
 
-    console.log(result, '-=-=-result');
+    if (!result) {
+      throw new ConflictException('服务异常，请重试！');
+    }
     const token = this.jwtService.generateToken({ username, password });
 
-    // 返回令牌给客户端
-    return { token };
+    console.log(token);
+
+    res.cookie('Authorization', 'Bearer ' + token, {
+      maxAge: 3600000,
+      httpOnly: true,
+    });
+
+    throw new HttpException('登录成功', HttpStatus.OK);
   }
 
   @Get('users')
