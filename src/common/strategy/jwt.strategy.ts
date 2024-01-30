@@ -2,10 +2,11 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import jwtConfig from '@/constants/jwt';
+import { AuthService } from '@/auth/auth.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(private readonly authService: AuthService) {
     const { secret } = jwtConfig();
     super({
       // 分别传入这些参数
@@ -16,9 +17,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   // 成功才会到这
-  async validate(payload: any) {
-    const userId = false;
-    if (!userId) {
+  async validate(payload: { username: string }) {
+    const user = await this.authService.validateUser(payload.username);
+    if (!user) {
       throw new UnauthorizedException('用户不存在');
     }
     return payload;

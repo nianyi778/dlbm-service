@@ -8,6 +8,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MongooseConfigProvider } from './constants/mongoose-config.provider';
+import { PracticeInterceptor } from './common/interceptor/practice.interceptor';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { ResponseInterceptor } from './common/interceptor/response.Interceptor';
 
 @Module({
   imports: [
@@ -41,7 +44,17 @@ import { MongooseConfigProvider } from './constants/mongoose-config.provider';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: PracticeInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ResponseInterceptor,
+    },
+  ],
 })
 export class AppModule {
   // 123

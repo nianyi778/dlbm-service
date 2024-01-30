@@ -42,11 +42,9 @@ export class UserController {
     if (!result) {
       throw new ConflictException('服务异常，请重试！');
     }
-    const token = this.jwtService.generateToken({ username, password });
+    const token = this.jwtService.generateToken({ username });
 
-    console.log(token);
-
-    res.cookie('Authorization', 'Bearer ' + token, {
+    res.cookie('Authorization', token, {
       maxAge: 3600000,
       httpOnly: true,
     });
@@ -56,8 +54,9 @@ export class UserController {
 
   @Get('users')
   @UseGuards(AuthGuard('jwt'))
-  findAll() {
-    return this.userService.findAll();
+  async findAll() {
+    const users = await this.userService.findAll();
+    return users;
   }
 
   @Post('verify')
