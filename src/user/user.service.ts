@@ -17,10 +17,7 @@ export class UserService {
     return this.userModel.findOne({ username: username });
   }
 
-  async createUser(payload: {
-    username: string;
-    password: string;
-  }): Promise<User> {
+  createUser(payload: { username: string; password: string }): Promise<User> {
     const { username, password } = payload;
     const user = {
       username: username,
