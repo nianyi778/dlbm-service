@@ -14,7 +14,6 @@ import { AuthService } from '@/auth/auth.service';
 import { AuthGuard } from '@nestjs/passport/dist/auth.guard';
 import { UserService } from './user.service';
 import { Response } from 'express';
-import jwtConfig from '@/constants/jwt';
 
 @Controller('auth')
 export class UserController {
@@ -25,28 +24,37 @@ export class UserController {
     //
   }
 
+  @Post('register')
+  async register(@Body() credentials: { username: string; password: string }) {
+    const { username, password } = credentials;
+    const cur = await this.userService.findOne(username);
+    if (cur) {
+      throw new ConflictException('用户名已注册');
+    }
+    // 写入磁盘
+    const result = await this.userService.createUser({ username, password });
+    if (!result) {
+      throw new ConflictException('服务异常，请重试！');
+    }
+    return '注册成功';
+  }
+
   @Post('login')
   async login(
     @Body() credentials: { username: string; password: string },
     @Res() res: Response,
   ): Promise<string> {
     const { username, password } = credentials;
-    const cur = await this.userService.findOne(username);
-    if (cur) {
-      throw new ConflictException('用户名已存在');
+    const cur = await this.userService.findOne(username, password);
+    if (!cur) {
+      throw new ConflictException('用户名不存在');
     }
-    // 写入磁盘
-    const result = await this.userService.createUser({ username, password });
 
-    if (!result) {
-      throw new ConflictException('服务异常，请重试！');
-    }
-    const { signOptions } = jwtConfig();
     // 如果验证成功，生成令牌
     const token = this.jwtService.generateToken({ username });
 
     res.cookie('Authorization', token, {
-      maxAge: +signOptions.expiresIn, // 1 day
+      maxAge: 24 * 60 * 60, // 1 day
       httpOnly: true,
     });
 

@@ -13,8 +13,15 @@ export class UserService {
     return this.userModel.find().exec();
   }
 
-  findOne(username: string): Promise<User> {
-    return this.userModel.findOne({ username: username });
+  findOne(username: string, password?: string): Promise<User> {
+    const query = { username } as {
+      username: string;
+      password?: string;
+    };
+    if (password) {
+      query.password = password;
+    }
+    return this.userModel.findOne(query);
   }
 
   createUser(payload: { username: string; password: string }): Promise<User> {

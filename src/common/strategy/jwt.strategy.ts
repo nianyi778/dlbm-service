@@ -11,7 +11,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       // 分别传入这些参数
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: true, // 是否校验过期
+      ignoreExpiration: false, // 当 ignoreExpiration 设置为 true 时，即使 JWT 的过期时间已经过去，仍然会被视为有效。这意味着即使 JWT 过期，也不会引发过期错误，允许继续使用该令牌。
       secretOrKey: secret,
     });
   }

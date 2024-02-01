@@ -23,7 +23,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
         DB_USER: Joi.string().required(),
         DB_PASS: Joi.string().required(),
         JWT_SECRET: Joi.string().required(),
-        JWT_SIGNOPTIONS_EXPIRESIN: Joi.string().default('1h'),
+        JWT_SIGNOPTIONS_EXPIRESIN: Joi.string().default('1d'),
       }),
     }),
 
