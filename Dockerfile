@@ -13,9 +13,12 @@ COPY package*.json ./
 # 安装应用依赖
 # RUN npm install
 
+# 创建新的 dist 目录
+RUN mkdir node_modules
+
 # 安装完毕后复制当前目录所有文件到镜像目录里面
 COPY dist/ . 
-COPY node_modules/ . 
+COPY node_modules/ ./node_modules
 
 # 暴露应用程序运行的端口（根据您的应用程序的需求修改）
 EXPOSE 3000
