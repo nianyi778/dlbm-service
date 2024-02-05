@@ -8,10 +8,13 @@ RUN ln -fs /usr/share/zoneinfo/${TZ} /etc/localtime \
 
 # 创建一个应用目录
 WORKDIR /usr/src/app
-# 这个星号通配符意思是复制package.json和package-lock.json,复制到当前应用目录
-COPY package*.json ./
+# 这个星号通配符意思是复制package.json和pnpm-lock.yaml,复制到当前应用目录
+COPY package.json ./
+COPY pnpm-lock.yaml ./
 # 安装应用依赖
-RUN npm install
+RUN npm install -g pnpm --registry=https://registry.npmmirror.com 
+
+RUN pnpm install
 
 # 安装完毕后复制当前目录所有文件到镜像目录里面
 COPY dist/ . 
