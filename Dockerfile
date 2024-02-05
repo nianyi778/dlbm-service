@@ -14,7 +14,9 @@ COPY pnpm-lock.yaml ./
 # 安装应用依赖
 RUN npm install -g pnpm --registry=https://registry.npmmirror.com 
 
-RUN pnpm install
+RUN pnpm get registry 
+
+RUN pnpm  --registry https://registry.npmmirror.com install
 
 # 安装完毕后复制当前目录所有文件到镜像目录里面
 COPY dist/ . 
