@@ -13,8 +13,10 @@ COPY package*.json ./
 # 安装应用依赖
 RUN npm install
 # 安装完毕后复制当前目录所有文件到镜像目录里面
-COPY . . 
-# 执行npm run build 后生成dist目录
-RUN npm run build
+COPY dist/ . 
+
+# 暴露应用程序运行的端口（根据您的应用程序的需求修改）
+EXPOSE 3000
+
 # 使用打包后的镜像
-CMD ["node","dist/main.js"]
+CMD ["node","main.js"]
