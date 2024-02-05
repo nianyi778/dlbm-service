@@ -1,5 +1,5 @@
 # 引用镜像
-FROM node:16.16.0 As production
+FROM node:16.17.1 As production
 
 ENV TZ Asia/Shanghai
 
