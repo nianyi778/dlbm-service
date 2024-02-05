@@ -7,13 +7,13 @@ import {
   Get,
   ConflictException,
   Res,
-  HttpException,
-  HttpStatus,
 } from '@nestjs/common';
 import { AuthService } from '@/auth/auth.service';
 import { AuthGuard } from '@nestjs/passport/dist/auth.guard';
 import { UserService } from './user.service';
 import { Response } from 'express';
+import { ClientTypeEnum, ClientType } from '@/common/decorators';
+import { mergeResTemplate } from 'utils/util';
 
 @Controller('auth')
 export class UserController {
@@ -41,9 +41,10 @@ export class UserController {
 
   @Post('login')
   async login(
+    @ClientType() clientType: ClientTypeEnum,
     @Body() credentials: { username: string; password: string },
     @Res() res: Response,
-  ): Promise<string> {
+  ) {
     const { username, password } = credentials;
     const cur = await this.userService.findOne(username, password);
     if (!cur) {
@@ -52,14 +53,16 @@ export class UserController {
 
     // 如果验证成功，生成令牌
     const token = this.jwtService.generateToken({ username });
-
-    res.cookie('Authorization', token, {
-      maxAge: 24 * 60 * 60, // 1 day
-      httpOnly: true,
-    });
-
-    // return '登录成功';
-    throw new HttpException('登录成功', HttpStatus.OK);
+    if (clientType === ClientTypeEnum.WEB) {
+      res.cookie('Authorization', token, {
+        maxAge: 24 * 60 * 60, // 1 day
+        httpOnly: true, // 限制只能通过 HTTP 访问 Cookie
+        secure: true, // 限制只能通过 HTTPS 访问 Cookie
+        sameSite: 'strict', // 限制 Cookie 在跨站点请求时发送
+      });
+      res.json(mergeResTemplate({ data: '登录成功' }));
+    }
+    res.json(mergeResTemplate({ data: { token } }));
   }
 
   @Get('users')
