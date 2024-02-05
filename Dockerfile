@@ -10,9 +10,12 @@ RUN ln -fs /usr/share/zoneinfo/${TZ} /etc/localtime \
 WORKDIR /usr/src/app
 # 这个星号通配符意思是复制package.json和package-lock.json,复制到当前应用目录
 COPY package*.json ./
+# 安装应用依赖
+# RUN npm install
 
 # 安装完毕后复制当前目录所有文件到镜像目录里面
 COPY dist/ . 
+COPY node_modules/ . 
 
 # 暴露应用程序运行的端口（根据您的应用程序的需求修改）
 EXPOSE 3000
