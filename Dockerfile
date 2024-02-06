@@ -17,9 +17,9 @@ RUN npm install -g pnpm --registry=https://registry.npmmirror.com
 RUN pnpm get registry 
 
 RUN pnpm  --registry https://registry.npmmirror.com install
-
+RUN ls
 # 安装完毕后复制当前目录所有文件到镜像目录里面
 COPY . . 
-
+RUN ls
 # 使用打包后的镜像
-CMD ["node","dist/main.js"]
+CMD ["node","dist/src/main.js"]
