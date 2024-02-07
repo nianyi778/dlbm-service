@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { InternalServerErrorException, Injectable } from '@nestjs/common';
 import TopClient from 'node-taobao-topclient';
 import { appkey, appsecret, REST_URL } from '@/constants/taobaoConfig';
 import { MaterialRecommendQuery } from './taobao.type';
@@ -25,6 +25,7 @@ export class TaobaoService {
       });
     } catch (err) {
       console.error(err);
+      throw new InternalServerErrorException('查询失败');
     }
     return result;
   }
