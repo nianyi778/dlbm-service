@@ -73,20 +73,12 @@ export class UserController {
   }
 
   @Post('verify')
-  // @UseGuards(AuthGuard('jwt'))
-  verifyToken(@Req() request) {
-    console.log(request.user);
+  @UseGuards(AuthGuard('jwt'))
+  async verifyToken(@Req() request) {
+    const { username } = request.user;
 
-    return '123';
+    const result = await this.userService.findOne(username);
 
-    // const isValid = this.jwtService.validateToken(tokenInfo.token);
-
-    // if (isValid) {
-    //   // 令牌验证通过
-    //   return { valid: true };
-    // } else {
-    //   // 令牌验证失败
-    //   return { valid: false };
-    // }
+    return !!result;
   }
 }
